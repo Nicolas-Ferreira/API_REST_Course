@@ -1,0 +1,170 @@
+Mongo DB commands:
+-----------------
+
+db.help()
+db.stats()
+
+
+
+
+Creating DB:
+------------
+
+use mydb --> to create a database named mydb or if it already exists switch to the DB
+db.movie.insert({"name":"Titanic"}) --> to add a document to the movie collection, if it does not exists then it will be created
+show dbs --> to list all databases in the MondoDB Server
+db.dropDatabase() --> to drop the DB
+
+
+
+
+Creating a Collection:
+----------------------
+
+db.createCollection(name, options) --> name is a string, options (optional) is a document with options such as Max num of documents, etc
+
+Example:
+db.createCollection( <name>,
+   {
+     capped: <boolean>, // Enables fix size collection and delete de the oldest document when the max size is reached
+     autoIndexId: <boolean>, // True --> automatically create index on _id element
+     size: <number>, // Max size in bytes for a capped collection
+     max: <number>, // Max number of documents allowed in the collection
+     storageEngine: <document>,
+     validator: <document>,
+     validationLevel: <string>,
+     validationAction: <string>,
+     indexOptionDefaults: <document>,
+     viewOn: <string>,              // Added in MongoDB 3.4
+     pipeline: <pipeline>,          // Added in MongoDB 3.4
+     collation: <document>,         // Added in MongoDB 3.4
+     writeConcern: <document>
+   }
+)
+
+show collections --> to list all collections in the db
+
+db.createCollection("mycol",{capped:true, size:3, max:3})
+
+
+
+
+Deleting Collection:
+--------------------
+
+db.COLLECTION_NAME.drop()
+db.mycol.drop()
+
+
+
+
+Data Types in MongoDB Collections:
+----------------------------------
+
+- String
+- Integer
+- Boolean (true/false)
+- Double
+- Min / Max Keys
+- Arrays
+- Timestamp
+- Object (This is used for embedded documents)
+- Null
+- Symbol (identical to String but reserved for languages that used specific symbol type)
+- Data
+- Object ID (used for _id)
+- Binary Data
+- Code (ou can have javascript code in a document)
+- Regular Expression
+
+
+
+
+Inserting Documents to Collections:
+-----------------------------------
+
+db.COLLECTION_NAME.insert(document)
+db.myCollection.insert({
+	_id: ObjectId(7df78ad8902c),
+	title:"MongoDB Overview",
+	description: "MongoDB is a NoSQL Database",
+	tags: ['DB', 'NoSQL', 'MongoDB'],
+	likes:54
+})
+
+Also we can insert an array of documents:
+db.COLLECTION_NAME.insert([document1, document2, document3])
+
+
+
+
+Querying Documents:
+-------------------
+
+db.COLLECTION_NAME.find(filter) // Returns all document from the collection COLLECTION_NAME
+db.COLLECTION_NAME.find(filter).pretty() // Returns all document from the collection COLLECTION_NAME in a pretty way (easy to read)
+db.COLLECTION_NAME.findOne(filter) // Returns only one document
+
+db.COLLECTION_NAME.find({"name":"Jack"}) // Returns all documents with name Jack
+db.COLLECTION_NAME.findOne({"name":"Jack"}) // Returns the first document with name Jack
+
+1) Filter operations:
+- Equal (==): df.myCol.find({"title":"MongoDb Overview"}).pretty()
+- Less than (<): df.myCol.find({"likes":{$lt:50}}).pretty()
+- Less than Equals (<=): df.myCol.find({"likes":{$lte:50}}).pretty()
+- Greater than (>): df.myCol.find({"likes":{$gt:50}}).pretty()
+- Greater than Equals (>=): df.myCol.find({"likes":{$gte:50}}).pretty()
+- Not Equals (!=): df.myCol.find({"likes":{$ne:50}}).pretty()
+
+2) Multiple conditions:
+- AND:
+db.myCol.find(
+	{
+		$and: [
+			{"title":"MongoDB Overview"}, {"likes":{$gt:50}}
+		]
+	}
+)
+- OR:
+db.myCol.find(
+	{
+		$or: [
+			{"title":"MongoDB Overview"}, {"likes":{$gt:50}}
+		]
+	}
+)
+
+3) Projection:
+Selecting only the fields from the collection that we need
+df.COLLECTION_NAME.find(SELECTION_CRITERIA, {KEY:1})
+df.myCol.find({"title":"MongoDb Overview"}, {"title":1, "_id":1}) // This will find and retreive the title and the _id
+
+4) Limiting Records:
+df.COLLECTION_NAME.find(SELECTION_CRITERIA).limit(NUMBER)
+df.myCol.find({"title":"MongoDb Overview"}).limit(10) // Limit 10 documents
+df.myCol.find().pretty().limit(10) // Limit 10 documents
+
+5) Sorting Documents:
+db.COLLECTION_NAME.find().sort({KEY:1})
+db.myCol.find().sort({"likes":1}) // Will sort documents in ascending order base on the number of likes
+
+
+
+
+Updating Documents:
+-------------------
+
+db.COLLECTION_NAME.update(SELECTION_CRITERIA, UPDATED_DATA) // Update the values
+db.COLLECTION_NAME.save(SELECTION_CRITERIA, UPDATED_DATA) // Replace the existing document with the new one
+
+db.myCol.update({"title":"MongoDB Overview"}, {$set:{"title":"New MongoDB Overview"}}) // Will update only the title field
+// By default, MongoDB will update one document, to update multiple documents you need to specify the 'multi' parameter
+db.myCol.update({"title":"MongoDB Overview"}, {$set:{"title":"New MongoDB Overview"}}, {multi:true})
+
+
+
+
+Deleting Documents:
+-------------------
+
+db.COLLECTION_NAME.delete(DELETION_CRITERIA) // Remove all documents
